@@ -11,87 +11,44 @@
 
     <canvas id="canvas" width="300" height="300"></canvas>
 
+    <script src="build/main.js"></script>
+
     <script type="text/javascript">
+
+
+
+      var data = new Float32Array(100)
+
+      var bee = {
+        x:0,
+        y:150,
+        dx:3,
+        dy:0
+      }
+
+      var flowers = [
+        {
+          x:70,
+          y:80,
+          pollen:20,
+          remain:20
+        },
+        {
+          x:150,
+          y:70,
+          pollen:20,
+          remain:20
+        }]
+
+
+      // the flight of the bumblebee
+      var path = jotbb.simulate(bee, flowers)
+
 
       var ctx = canvas.getContext('2d')
 
+      jotbb.render(ctx, bee, flowers, path)
 
-      function render(bee, flower){
-        ctx.clearRect(0,0,canvas.width, canvas.height)
-
-        ctx.beginPath()
-        ctx.fillStyle = '#aaa'
-        ctx.arc(flower.x, flower.y, flower.r, 0, Math.PI*2)
-        ctx.fill()
-
-
-        ctx.beginPath()
-
-        for (var i = 0; i < 400; i++) {
-          ctx.lineTo(bee.x, bee.y)
-          ctx.arc(bee.x, bee.y, 1, 0, Math.PI*2)
-          ctx.moveTo(bee.x, bee.y)
-
-          bee.x += bee.dx
-          bee.y += bee.dy
-
-          // damping
-          bee.dx *= 0.99
-          bee.dy *= 0.99
-
-          // distance to flower
-          var distance = Math.sqrt(
-            Math.pow(flower.x - bee.x,2) +
-            Math.pow(flower.y - bee.y,2)
-          )
-
-          // wrong
-          var force = 1 / (distance * distance)
-
-          bee.dx += force * (flower.x - bee.x) * 3
-          bee.dy += force * (flower.y - bee.y) * 3
-
-        }
-
-        ctx.strokeStyle = '#fc0'
-        ctx.stroke()
-
-      }
-
-
-      // render(
-      //   {
-      //     x:0,
-      //     y:150,
-      //     dx:4,
-      //     dy:0
-      //   },
-      //   {
-      //     x:80,
-      //     y:85,
-      //     r:20,
-      //   }
-      // )
-
-      function foo(time) {
-        requestAnimationFrame(foo)
-        render(
-          {
-            x:0,
-            y:150,
-            dx:4,
-            dy:0
-          },
-          {
-            x:(Math.sin(time/2000) * 100) + 150,
-            y:(Math.sin(time/3000) * 150) + 150,
-            r:20,
-          }
-        )
-
-      }
-
-      requestAnimationFrame(foo)
 
     </script>
 
