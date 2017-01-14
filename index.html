@@ -66,6 +66,39 @@
       var path = []
 
 
+      var w = 400, h = 400
+
+      function r(a,b) {
+
+        return (Math.random() * (b-a))+a
+      }
+
+      function reset(){
+        bee.y = r(100,300)
+
+        flowers.forEach( function(flower) {
+          flower.x = r(50,350)
+          flower.y = r(50,350)
+          flower.pollen = r(20, 30)
+        })
+
+        target.x = r(100, 300)
+
+        target.y = Math.random() > 0.5 ?
+          h : 0
+
+
+        repaint = true
+      }
+
+      // setInterval(function(){
+      //   reset()
+      // }, 300)
+
+      reset()
+
+
+
       var ctx = canvas.getContext('2d')
 
       var repaint = true
@@ -76,7 +109,7 @@
         if(repaint) {
 
           // the path of the bumblebee
-          path = jotbb.simulate(bee, flowers, canvas.width)
+          path = jotbb.simulate(bee, flowers, canvas.width, target)
 
           jotbb.render(ctx, bee, flowers, path, target)
 
@@ -140,7 +173,8 @@
 
       function maybeFinish() {
         if(jotbb.completed(path, flowers, target)) {
-          alert("YAR")
+          // alert("YAR")
+          reset()
         } else {
           console.log("nope")
         }
@@ -178,7 +212,6 @@
       canvas.addEventListener('touchend', function(e){
         maybeFinish()
       })
-
 
 
     </script>

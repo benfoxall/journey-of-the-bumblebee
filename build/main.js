@@ -34,8 +34,9 @@ function nearest(flowers, x, y) {
 
 
 
-var simulate = function (bee, flowers, max) {
+var simulate = function (bee, flowers, max, target) {
   if ( max === void 0 ) max = 100;
+  if ( target === void 0 ) target = {r: 10, x: 0, y: 0};
 
 
   // reset the remaining pollen
@@ -51,11 +52,21 @@ var simulate = function (bee, flowers, max) {
   // could be a typed array for webgl rendering
   var path = [];
 
+
+  var hD = target.r * target.r;
+  function hit(x, y) {
+    return Math.pow(target.x-x, 2) + Math.pow(target.y-y, 2) < hD
+  }
+
   for (var i = 0; i < 300; i++) {
 
     path.push([x,y]);
 
     if(x < 0 || x > max || y < 0 || y > max) {
+      return path
+    }
+
+    if(hit(x,y)) {
       return path
     }
 
