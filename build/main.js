@@ -69,6 +69,9 @@ var simulate = function (bee, flowers) {
       //
       force = Math.max(force, 0.001);
 
+
+      force = force * (flower.remain / flower.pollen);
+
       dx += force * (flower.x - x) * 3;
       dy += force * (flower.y - y) * 3;
 
@@ -110,7 +113,6 @@ var render = function (ctx, bee, flowers, path) {
   });
   ctx.fill();
 
-  console.log("---", path);
   ctx.beginPath();
   ctx.strokeStyle = '#fc0';
   path.forEach( function (ref) {
@@ -123,12 +125,9 @@ var render = function (ctx, bee, flowers, path) {
   });
   ctx.stroke();
 
-
-  // initial state
-  console.log("todo: render");
-
 };
 
+exports.nearest = nearest;
 exports.simulate = simulate;
 exports.render = render;
 

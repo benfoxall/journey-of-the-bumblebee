@@ -16,7 +16,6 @@
     <script type="text/javascript">
 
 
-
       var data = new Float32Array(100)
 
       var bee = {
@@ -41,13 +40,46 @@
         }]
 
 
-      // the flight of the bumblebee
-      var path = jotbb.simulate(bee, flowers)
-
-
       var ctx = canvas.getContext('2d')
 
-      jotbb.render(ctx, bee, flowers, path)
+      var repaint = true
+
+      function draw(t) {
+        requestAnimationFrame(draw)
+
+        if(repaint) {
+
+          // the path of the bumblebee
+          var path = jotbb.simulate(bee, flowers)
+
+          jotbb.render(ctx, bee, flowers, path)
+
+          repaint = false
+        }
+
+      }
+
+      requestAnimationFrame(draw)
+
+
+
+
+
+      canvas.addEventListener('mousemove', function(e){
+
+        if(e.buttons || e.webkitForce) {
+          var flower = jotbb.nearest(flowers, e.clientX, e.clientY)
+
+          if(flower) {
+            flower.x = e.clientX
+            flower.y = e.clientY
+          }
+
+          repaint = true
+        }
+
+      }, false)
+
 
 
     </script>
