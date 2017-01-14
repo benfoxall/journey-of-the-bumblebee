@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Journey of the Bumblebee</title>
+    <style media="screen">
+      canvas { box-shadow: rgba(0,0,0,0.2) 0 0 10px }
+    </style>
+  </head>
+  <body>
+
+    <canvas id="canvas" width="300" height="300"></canvas>
+
+    <script type="text/javascript">
+
+      var ctx = canvas.getContext('2d')
+
+      var bee = {
+        x:0,
+        y:150,
+        dx:4,
+        dy:0
+      }
+
+      for (var i = 0; i < 100; i++) {
+        ctx.fillRect(bee.x, bee.y, 2, 2)
+
+        bee.x += bee.dx
+        bee.y += bee.dy
+
+        bee.dx *= 0.99
+        bee.dy *= 0.99
+      }
+
+    </script>
+
+  </body>
+</html>
