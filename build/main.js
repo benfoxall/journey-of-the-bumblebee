@@ -22,7 +22,9 @@ function nearest(flowers, x, y) {
 
 
 
-var simulate = function (bee, flowers) {
+var simulate = function (bee, flowers, max) {
+  if ( max === void 0 ) max = 100;
+
 
   // reset the remaining pollen
   flowers.forEach(function (f) { return f.remain = f.pollen; });
@@ -37,9 +39,13 @@ var simulate = function (bee, flowers) {
   // could be a typed array for webgl rendering
   var path = [];
 
-  for (var i = 0; i < 120; i++) {
+  for (var i = 0; i < 300; i++) {
 
     path.push([x,y]);
+
+    if(x < 0 || x > max || y < 0 || y > max) {
+      return path
+    }
 
     x += dx;
     y += dy;
@@ -60,6 +66,12 @@ var simulate = function (bee, flowers) {
         Math.pow(flower.x - x,2) +
         Math.pow(flower.y - y,2)
       );
+
+      if(distance > 60) {continue}
+
+      //clamp
+
+      if(distance < 2) { distance = 2; }
 
       // force upon bee
       var force = 1 / (distance * distance);
@@ -100,15 +112,16 @@ var render = function (ctx, bee, flowers, path) {
   ctx.beginPath();
   ctx.fillStyle = '#eee';
   flowers.forEach( function (flower) {
+    ctx.moveTo(flower.x, flower.y);
     ctx.arc(flower.x, flower.y, flower.pollen, 0, Math.PI*2);
   });
   ctx.fill();
 
-  // todo pollen left
 
   ctx.beginPath();
   ctx.fillStyle = '#f08';
   flowers.forEach( function (flower) {
+    ctx.moveTo(flower.x, flower.y);
     ctx.arc(flower.x, flower.y, flower.remain, 0, Math.PI*2);
   });
   ctx.fill();
@@ -120,7 +133,7 @@ var render = function (ctx, bee, flowers, path) {
     var y = ref[1];
 
     ctx.lineTo(x, y);
-    ctx.arc(x, y, 1, 0, Math.PI*2);
+    ctx.arc(x, y, .75, 0, Math.PI*2);
     ctx.moveTo(x, y);
   });
   ctx.stroke();

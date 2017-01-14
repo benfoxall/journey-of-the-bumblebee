@@ -3,13 +3,27 @@
   <head>
     <meta charset="utf-8">
     <title>Journey of the Bumblebee</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Contrail+One" rel="stylesheet">
     <style media="screen">
-      canvas { box-shadow: rgba(0,0,0,0.2) 0 0 10px }
+      canvas {
+        box-shadow: rgba(0,0,0,0.2) 0 0 10px; cursor: pointer;
+        max-width: 100%
+      }
+
+      body {font-family: 'Contrail One', cursive;}
     </style>
+
   </head>
   <body>
 
-    <canvas id="canvas" width="300" height="300"></canvas>
+    <p id="stats">
+      <!-- Distance: <span id="stats_time">2s</span><br /> -->
+      Pollen: <span id="stats_pollen">20%</span>
+    </p>
+
+    <canvas id="canvas" width="600" height="600"></canvas>
 
     <script src="build/main.js"></script>
 
@@ -20,7 +34,7 @@
 
       var bee = {
         x:0,
-        y:150,
+        y:300,
         dx:3,
         dy:0
       }
@@ -29,14 +43,22 @@
         {
           x:70,
           y:80,
-          pollen:20,
-          remain:20
+          pollen:10
         },
         {
           x:150,
           y:70,
-          pollen:20,
-          remain:20
+          pollen:20
+        },
+        {
+          x:150,
+          y:80,
+          pollen:15
+        },
+        {
+          x:150,
+          y:90,
+          pollen:20
         }]
 
 
@@ -50,9 +72,21 @@
         if(repaint) {
 
           // the path of the bumblebee
-          var path = jotbb.simulate(bee, flowers)
+          var path = jotbb.simulate(bee, flowers, canvas.width)
 
           jotbb.render(ctx, bee, flowers, path)
+
+          var total = flowers.reduce(function(memo, f) {
+            memo.pollen += f.pollen
+            memo.remain += f.remain
+            return memo
+          }, {pollen:0, remain:0})
+
+          console.log(path.length)
+
+          stats_pollen.innerText =
+          Math.round((1 - (total.remain / total.pollen)) * 100) + '%'
+
 
           repaint = false
         }
@@ -64,18 +98,40 @@
 
 
 
+      var rect = canvas.getBoundingClientRect()
+      var ratio = canvas.clientWidth / canvas.width
+
+      function update(cx,cy) {
+        var x = (cx - rect.left) / ratio
+        var y = (cy - rect.top) / ratio
+
+        var flower = jotbb.nearest(flowers, x, y)
+
+        if(flower) {
+          flower.x = x
+          flower.y = y
+
+          repaint = true
+        }
+
+      }
 
       canvas.addEventListener('mousemove', function(e){
 
         if(e.buttons || e.webkitForce) {
-          var flower = jotbb.nearest(flowers, e.clientX, e.clientY)
+          update(e.clientX, e.clientY)
+        }
 
-          if(flower) {
-            flower.x = e.clientX
-            flower.y = e.clientY
-          }
+      }, false)
 
-          repaint = true
+      canvas.addEventListener('touchstart', function(e){
+        e.preventDefault()
+      }, false)
+
+      canvas.addEventListener('touchmove', function(e){
+        for (var i = 0; i < e.touches.length; i++) {
+          var t = e.touches[i]
+          update(t.clientX, t.clientY)
         }
 
       }, false)
