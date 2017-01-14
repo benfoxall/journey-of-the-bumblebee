@@ -9,32 +9,28 @@
     <style media="screen">
       canvas {
         box-shadow: rgba(0,0,0,0.2) 0 0 10px; cursor: pointer;
-        max-width: 100%
+        max-width: 100%;
+        background: #f1f1f1;
       }
 
-      body {font-family: 'Contrail One', cursive;}
+      body {
+        font-family: 'Contrail One', cursive;
+      }
     </style>
 
   </head>
   <body>
 
-    <p id="stats">
-      <!-- Distance: <span id="stats_time">2s</span><br /> -->
-      Pollen: <span id="stats_pollen">20%</span>
-    </p>
-
-    <canvas id="canvas" width="600" height="600"></canvas>
+    <canvas id="canvas" width="400" height="400"></canvas>
 
     <script src="build/main.js"></script>
 
     <script type="text/javascript">
 
 
-      var data = new Float32Array(100)
-
       var bee = {
         x:0,
-        y:300,
+        y:200,
         dx:3,
         dy:0
       }
@@ -61,6 +57,12 @@
           pollen:20
         }]
 
+      var target = {
+        x: 400,
+        y: 0,
+        r: 30
+      }
+
 
       var ctx = canvas.getContext('2d')
 
@@ -74,7 +76,7 @@
           // the path of the bumblebee
           var path = jotbb.simulate(bee, flowers, canvas.width)
 
-          jotbb.render(ctx, bee, flowers, path)
+          jotbb.render(ctx, bee, flowers, path, target)
 
           var total = flowers.reduce(function(memo, f) {
             memo.pollen += f.pollen
@@ -82,10 +84,22 @@
             return memo
           }, {pollen:0, remain:0})
 
-          console.log(path.length)
 
-          stats_pollen.innerText =
-          Math.round((1 - (total.remain / total.pollen)) * 100) + '%'
+          var collected = (1 - (total.remain / total.pollen))
+
+          if(collected > 0.6) {
+            ctx.fillStyle = 'rgba(0,0,0,0.2)'
+          } else {
+            ctx.fillStyle = 'rgba(0,0,0,0.2)'
+          }
+          ctx.fillStyle = collected > 0.6 ?
+            '#fc0' : '#3f8ed8'
+
+          var status = Math.round(collected * 100) + '%'
+          ctx.font = "48px 'Contrail One', sans-serif";
+          ctx.fillText(status, 10, 50);
+
+
 
 
           repaint = false
@@ -97,13 +111,20 @@
 
 
 
+      var rect, ratio, s_top
 
-      var rect = canvas.getBoundingClientRect()
-      var ratio = canvas.clientWidth / canvas.width
+      function size(){
+        rect = canvas.getBoundingClientRect()
+        ratio = canvas.clientWidth / canvas.width
+        s_top = document.body.scrollTop
+      }
+      document.addEventListener('scroll', size(), false)
+      document.addEventListener('resize', size(), false)
+
 
       function update(cx,cy) {
         var x = (cx - rect.left) / ratio
-        var y = (cy - rect.top) / ratio
+        var y = (cy - rect.top - s_top) / ratio
 
         var flower = jotbb.nearest(flowers, x, y)
 

@@ -1,6 +1,17 @@
 (function (exports) {
 'use strict';
 
+var withinCircle = function (ref, ref$1) {
+   var px = ref[0];
+   var py = ref[1];
+   var x = ref$1.x;
+   var y = ref$1.y;
+   var r = ref$1.r;
+
+   return Math.sqrt(Math.pow(px-x, 2) + Math.pow(py-y, 2)) < r;
+};
+
+
 function nearest(flowers, x, y) {
 
   var flower, distance = Number.MAX_VALUE;
@@ -105,12 +116,12 @@ var simulate = function (bee, flowers, max) {
 
 
 
-var render = function (ctx, bee, flowers, path) {
+var render = function (ctx, bee, flowers, path, target) {
 
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
   ctx.beginPath();
-  ctx.fillStyle = '#eee';
+  ctx.fillStyle = '#fff';
   flowers.forEach( function (flower) {
     ctx.moveTo(flower.x, flower.y);
     ctx.arc(flower.x, flower.y, flower.pollen, 0, Math.PI*2);
@@ -119,13 +130,14 @@ var render = function (ctx, bee, flowers, path) {
 
 
   ctx.beginPath();
-  ctx.fillStyle = '#f08';
+  ctx.fillStyle = '#3fd89c';
   flowers.forEach( function (flower) {
     ctx.moveTo(flower.x, flower.y);
     ctx.arc(flower.x, flower.y, flower.remain, 0, Math.PI*2);
   });
   ctx.fill();
 
+  // bee path
   ctx.beginPath();
   ctx.strokeStyle = '#fc0';
   path.forEach( function (ref) {
@@ -137,6 +149,17 @@ var render = function (ctx, bee, flowers, path) {
     ctx.moveTo(x, y);
   });
   ctx.stroke();
+
+
+  var last = path[path.length-1];
+  var hit = withinCircle(last, target);
+
+
+  // target
+  ctx.beginPath();
+  ctx.fillStyle = hit ? '#fc0' : '#3f8ed8';
+  ctx.arc(target.x, target.y, target.r, 0, Math.PI*2);
+  ctx.fill();
 
 };
 
