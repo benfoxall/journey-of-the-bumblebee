@@ -33,6 +33,7 @@ function nearest(flowers, x, y) {
 
 
 
+
 var simulate = function (bee, flowers, max) {
   if ( max === void 0 ) max = 100;
 
@@ -154,7 +155,6 @@ var render = function (ctx, bee, flowers, path, target) {
   var last = path[path.length-1];
   var hit = withinCircle(last, target);
 
-
   // target
   ctx.beginPath();
   ctx.fillStyle = hit ? '#fc0' : '#3f8ed8';
@@ -163,8 +163,31 @@ var render = function (ctx, bee, flowers, path, target) {
 
 };
 
+var completed = function (path, flowers, target) {
+
+  // are we hitting the end
+  var last = path[path.length-1];
+  var hit = withinCircle(last, target);
+
+
+  var total = flowers.reduce(function(memo, f) {
+    memo.pollen += f.pollen;
+    memo.remain += f.remain;
+    return memo
+  }, {pollen:0, remain:0});
+
+  // have we gathered enough
+  var collected = (1 - (total.remain / total.pollen)) > 0.6;
+
+  // console.log(hit, collected, total)
+
+  return hit && collected
+
+};
+
 exports.nearest = nearest;
 exports.simulate = simulate;
 exports.render = render;
+exports.completed = completed;
 
 }((this.jotbb = this.jotbb || {})));

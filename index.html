@@ -5,7 +5,7 @@
     <title>Journey of the Bumblebee</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://fonts.googleapis.com/css?family=Contrail+One" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Contrail+One&text=1234567890%" rel="stylesheet">
     <style media="screen">
       canvas {
         box-shadow: rgba(0,0,0,0.2) 0 0 10px; cursor: pointer;
@@ -31,7 +31,7 @@
       var bee = {
         x:0,
         y:200,
-        dx:3,
+        dx:4,
         dy:0
       }
 
@@ -58,10 +58,12 @@
         }]
 
       var target = {
-        x: 400,
+        x: 250,
         y: 0,
         r: 30
       }
+
+      var path = []
 
 
       var ctx = canvas.getContext('2d')
@@ -74,7 +76,7 @@
         if(repaint) {
 
           // the path of the bumblebee
-          var path = jotbb.simulate(bee, flowers, canvas.width)
+          path = jotbb.simulate(bee, flowers, canvas.width)
 
           jotbb.render(ctx, bee, flowers, path, target)
 
@@ -87,17 +89,16 @@
 
           var collected = (1 - (total.remain / total.pollen))
 
-          if(collected > 0.6) {
-            ctx.fillStyle = 'rgba(0,0,0,0.2)'
-          } else {
-            ctx.fillStyle = 'rgba(0,0,0,0.2)'
-          }
-          ctx.fillStyle = collected > 0.6 ?
-            '#fc0' : '#3f8ed8'
+          if(collected) {
 
-          var status = Math.round(collected * 100) + '%'
-          ctx.font = "48px 'Contrail One', sans-serif";
-          ctx.fillText(status, 10, 50);
+            ctx.fillStyle = collected > 0.6 ?
+              '#fc0' : '#3f8ed8'
+
+            var status = Math.round(collected * 100) + '%'
+            ctx.font = "48px 'Contrail One', sans-serif";
+            ctx.fillText(status, 10, 50);
+
+          }
 
 
 
@@ -137,6 +138,15 @@
 
       }
 
+      function maybeFinish() {
+        if(jotbb.completed(path, flowers, target)) {
+          alert("YAR")
+        } else {
+          console.log("nope")
+        }
+
+      }
+
       canvas.addEventListener('mousemove', function(e){
 
         if(e.buttons || e.webkitForce) {
@@ -145,9 +155,16 @@
 
       }, false)
 
+      canvas.addEventListener('mouseup', function(e){
+        maybeFinish()
+      })
+
+
+
       canvas.addEventListener('touchstart', function(e){
         e.preventDefault()
       }, false)
+
 
       canvas.addEventListener('touchmove', function(e){
         for (var i = 0; i < e.touches.length; i++) {
@@ -156,6 +173,11 @@
         }
 
       }, false)
+
+
+      canvas.addEventListener('touchend', function(e){
+        maybeFinish()
+      })
 
 
 
