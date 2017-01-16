@@ -90,11 +90,11 @@ var simulate = function (bee, flowers, max, target) {
         Math.pow(flower.y - y,2)
       );
 
-      if(distance > 60) {continue}
+      if(distance > 90) {continue}
 
       //clamp
 
-      if(distance < 2) { distance = 2; }
+      if(distance < 1) { distance = 1; }
 
       // force upon bee
       var force = 1 / (distance * distance);
@@ -107,12 +107,12 @@ var simulate = function (bee, flowers, max, target) {
 
       force = force * (flower.remain / flower.pollen);
 
-      dx += force * (flower.x - x) * 3;
-      dy += force * (flower.y - y) * 3;
+      dx += force * (flower.x - x) * 7;
+      dy += force * (flower.y - y) * 7;
 
       // remove the pollen from the flower
 
-      flower.remain -= force * 150;
+      flower.remain -= force * 180;
 
       flower.remain = Math.max(flower.remain, 0);
 
